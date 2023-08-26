@@ -5,5 +5,5 @@ from assinaturas.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', Login.as_view(), name='login'),
+    path('login/', login_view, name='login'),
 ]
