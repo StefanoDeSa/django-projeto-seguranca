@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Criar Documento</h1>
+
+    <form action="{% url 'new_document' %}" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-6">
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Documento</label>
+                    <textarea placeholder="Digite o texto do documento" class="form-control" id="exampleFormControlTextarea1" rows="3" name="texto"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" name='action' value="salvar">Salvar</button>
+        <button type="submit" class="btn btn-success" name='action' value="assinar">Assinar</button>
+    </form>
+
+    {% if document %}
+        <div class="alert alert-success my-3">
+            {{ document }}
+        </div>
+    {% endif %}
+
+    {% if message %}
+        <div class="alert alert-danger my-3">
+            {{ message }}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

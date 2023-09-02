@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Chaves assimétricas</h1>
+
+    <p>
+        Clique no botão para gerar um par de chaves assimétricas.
+    </p>
+
+    {% if user.keys.exists %}
+        <button type="submit" class="btn btn-primary" disabled>Gerar chaves</button>
+        {% if success %}
+            <div class="alert alert-success my-3">
+                <p>{{success}}</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <form action="{% url 'generate_keys' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Gerar chaves</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
