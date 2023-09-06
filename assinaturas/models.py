@@ -21,7 +21,7 @@ class Signature(models.Model):
 
     def __str__(self):
         data_formatada = self.data.strftime('%Y-%m-%d %H:%M:%S')
-        return f"Assinatura do {self.user} - {data_formatada}"
+        return f"Assinatura em {data_formatada}"
     
 
 class Document(models.Model):

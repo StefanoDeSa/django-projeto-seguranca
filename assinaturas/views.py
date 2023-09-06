@@ -3,10 +3,12 @@ import hashlib
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from django.contrib.auth.decorators import login_required
+
 from .models import *
 
 def login_view(request):
@@ -80,14 +82,15 @@ def generate_keys(request):
 
 @login_required
 def new_document(request):
-    user = request.user
-    texto = request.POST['texto']
-
     if request.method == 'POST':
-        if request.POST['action'] == 'salvar':
+        user = request.user
+        action = request.POST.get('action', '')
 
-            # Verifique se o documento já existe no banco de dados.
-            document = Document.objects.filter(user=request.user, texto=texto).first()
+        if action == 'salvar':
+            texto = request.POST.get('texto', '')
+
+            # Puxando o documento pelo usuário e o texto atual.
+            document = Document.objects.filter(user=user, texto=texto).first()
 
             if document:
                 # O documento já existe no banco de dados.
@@ -95,9 +98,9 @@ def new_document(request):
                     'message': 'O documento já existe.',
                 })
             else:
-                # O documento não existe no banco de dados.
+                # O documento não existe no banco de dados e é criado.
                 document = Document(
-                    user=request.user,
+                    user=user,
                     texto=texto,
                     salvo=True,
                 )
@@ -107,14 +110,55 @@ def new_document(request):
                 return render(request, 'criar_documento.html', {
                     'document': 'Documento salvo',
                 })
-        else:
+        elif action == 'assinar':
+            texto = request.POST.get('texto', '')
+
+            # Recuperando a chave privada do usuário
             chaves = Key.objects.get(user=user)
-            chave_privada = chaves.private_key
-            hash_documento = hashlib.sha256(request.POST['texto'].encode()).digest()
+            chave_privada = serialization.load_pem_private_key(
+                chaves.private_key,
+                password=None,
+            )
 
-            # Gerar o hash do texto
-            hash = hashlib.sha256(texto.encode()).hexdigest()
+            # Assinando a mensagem usando a chave privada
+            signature = chave_privada.sign(
+                texto.encode(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
 
-           
+            assinado = Signature(
+                assinatura = signature
+            )
+
+            assinado.save()
+            
+            document = Document.objects.filter(user=user, texto=texto).first()
+
+            if document:
+                #quero apenas atualizar o campo "assinado" com o ass
+
+                document.assinado = assinado
+                document.save()
+                return render(request, 'criar_documento.html', {
+                    'document': 'O documento já existe e foi assinado.',
+                })
+            else:
+                document = Document(
+                    user=user,
+                    texto=texto,
+                    salvo=True,
+                    assinado=assinado
+                )
+
+                document.save()
+
+                return render(request, 'criar_documento.html', {
+                    'document': 'Documento salvo e assinado',
+                })
+
     else:
         return render(request, 'criar_documento.html')
