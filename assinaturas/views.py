@@ -3,11 +3,11 @@ import hashlib
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
-from django.contrib.auth.decorators import login_required
 
 from .models import *
 
@@ -162,3 +162,25 @@ def new_document(request):
 
     else:
         return render(request, 'criar_documento.html')
+    
+@login_required
+def signature_list(request):
+
+    user = request.user
+
+    documents = Document.objects.filter(user=user, assinado__isnull=False)
+
+    return render(request, 'lista_assinados.html', {
+        'documents': documents,
+    })
+
+@login_required
+def view_document(request, id):
+
+    document = Document.objects.get(id=id)
+    assinatura_hex = document.assinado.assinatura.encode().hex()
+    document.assinado.assinatura = assinatura_hex
+
+    return render(request, 'visualizar_documento.html', {
+        'documento': document,
+    })

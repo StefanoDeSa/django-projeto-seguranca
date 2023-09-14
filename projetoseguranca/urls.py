@@ -11,4 +11,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('keys/', generate_keys, name='generate_keys'),
     path('newdocument/', new_document, name='new_document'),
+    path('signature_list/', signature_list, name='signature_list'),
+    path('documentos/<int:id>/view/', view_document, name='view_document'),
 ]

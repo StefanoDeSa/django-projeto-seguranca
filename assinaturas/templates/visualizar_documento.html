@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card my-5">
+        <div class="card-body">
+            <h5 class="card-title">Texto plano</h5>
+            <p class="card-text">{{ documento.texto }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Assinatura</h5>
+          <p class="card-text"><Strong>Usuário: </Strong>{{ documento.user }}</p>
+          <p class="card-text"><Strong>Data: </Strong>{{ documento.assinado.data }}</p>
+          <p class="card-text"><Strong>Assinatura: </Strong>{{ documento.assinado.assinatura }}</p>
+        </div>
+      </div>
+</div>
+{% endblock %}
