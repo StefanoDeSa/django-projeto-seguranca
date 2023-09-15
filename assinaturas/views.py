@@ -119,19 +119,36 @@ def new_document(request):
                 chaves.private_key,
                 password=None,
             )
+            
+            #recupera chave publica
+            chave_publica = chave_privada.public_key()
+            
+            #criptografa a mensagem
+            ciphertext = chave_publica.encrypt(
+            texto.encode(),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+                )
+            )
+
+            #consegue o hash da mensagem criptografada
+            ciphertext_hash = hashlib.sha256(ciphertext).hexdigest()
 
             # Assinando a mensagem usando a chave privada
             signature = chave_privada.sign(
-                texto.encode(),
+                ciphertext,
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
                     salt_length=padding.PSS.MAX_LENGTH
                 ),
                 hashes.SHA256()
             )
-
+    
             assinado = Signature(
-                assinatura = signature
+                assinatura = signature,
+                hash = ciphertext_hash
             )
 
             assinado.save()
@@ -184,3 +201,21 @@ def view_document(request, id):
     return render(request, 'visualizar_documento.html', {
         'documento': document,
     })
+
+def validar_hash(request):
+
+    if request.method == 'POST':
+
+        hash = request.POST['hash']
+
+        # Verifique se o hash já está no sistema
+        if Signature.objects.filter(hash=hash).exists():
+            return render(request, 'validar_hash.html', {
+                'hash_existe': True,
+            })
+        else:
+            return render(request, 'validar_hash.html', {
+                'hash_existe': False,
+            })
+
+    return render(request, 'validar_hash.html')

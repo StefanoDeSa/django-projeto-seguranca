@@ -18,6 +18,7 @@ class Signature(models.Model):
 
     data = models.DateTimeField(verbose_name='Data e Hora', auto_now_add=True)
     assinatura = models.TextField(verbose_name='Assinatura')
+    hash = models.TextField(verbose_name='Hash')
 
     def __str__(self):
         data_formatada = self.data.strftime('%Y-%m-%d %H:%M:%S')

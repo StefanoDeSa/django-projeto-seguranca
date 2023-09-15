@@ -15,7 +15,7 @@ class KeyAdmin(admin.ModelAdmin):
     list_chave_publica.short_description = "Chave Pública"
 
 class SignatureAdmin(admin.ModelAdmin):
-    list_display = ('data', 'assinatura')
+    list_display = ('data', 'assinatura', 'hash')
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('user', 'texto')

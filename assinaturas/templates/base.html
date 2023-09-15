@@ -21,11 +21,11 @@
                 <a class="nav-link" href="{% url 'signature_list' %}">Seus documentos</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Validar documento</a>
+                <a class="nav-link" href="{% url 'validar_hash' %}">Validar documento</a>
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="#">Validar documento</a>
+                <a class="nav-link" href="{% url 'validar_hash' %}">Validar documento</a>
               </li>
             {% endif %}
           </ul>
