@@ -11,5 +11,19 @@
       </div>
       <button type="submit" class="btn btn-primary mt-3">Validar</button>
     </form>
+
+    {% if request.method == 'POST' and success %}
+
+    <div class="alert alert-success my-3">
+      <p>{{success}}</p>
+    </div>
+    
+    {% elif request.method == 'POST' and error %}
+
+    <div class="alert alert-danger my-3">
+      <p>{{error}}</p>
+    </div>
+
+    {% endif %}
   </div>
 {% endblock %}

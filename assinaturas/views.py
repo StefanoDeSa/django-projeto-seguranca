@@ -211,11 +211,12 @@ def validar_hash(request):
         # Verifique se o hash já está no sistema
         if Signature.objects.filter(hash=hash).exists():
             return render(request, 'validar_hash.html', {
-                'hash_existe': True,
+                'success': 'Hash informado está cadastrado no sistema',
             })
         else:
             return render(request, 'validar_hash.html', {
-                'hash_existe': False,
+                'error': 'Hash informado não está cadastrado no sistema',
             })
+            
 
     return render(request, 'validar_hash.html')
